@@ -3,15 +3,16 @@ import { Container } from '../styled-components';
 import { ALL_SPECIES } from '../CONSTANTS';
 
 function SkillTree() {
-  // Selected species (stores the KEY, e.g. "species_bothan")
+  // Stores the species KEY (e.g. "species_bothan")
   const [speciesSelected, setSpeciesSelected] = useState('');
 
-  // Dropdown open/close
+  // Dropdown open / close
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Click-outside detection
+  // Ref for click-outside handling
   const wrapperRef = useRef(null);
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -20,12 +21,17 @@ function SkillTree() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () =>
+      document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Helper to get display name
-  const getSpeciesLabel = (key) =>
-    ALL_SPECIES[key]?.replace(' Species Features', '') || '';
+  // Get display label safely
+  const getSpeciesLabel = (key) => {
+    return (
+      ALL_SPECIES[key]?.label?.replace(' Species Features', '') ||
+      'Species:'
+    );
+  };
 
   return (
     <Container
@@ -48,7 +54,7 @@ function SkillTree() {
           marginBottom: '8px',
         }}
       >
-        {/* Selected value box */}
+        {/* Selected value */}
         <div
           onClick={() => setDropdownOpen((prev) => !prev)}
           style={{
@@ -80,11 +86,11 @@ function SkillTree() {
               zIndex: 1000,
             }}
           >
-            {Object.entries(ALL_SPECIES).map(([id, label]) => (
+            {Object.entries(ALL_SPECIES).map(([key, data]) => (
               <div
-                key={id}
+                key={key}
                 onClick={() => {
-                  setSpeciesSelected(id);
+                  setSpeciesSelected(key);
                   setDropdownOpen(false);
                 }}
                 style={{
@@ -100,25 +106,33 @@ function SkillTree() {
                   (e.currentTarget.style.backgroundColor = '#008ca7')
                 }
               >
-                {label.replace(' Species Features', '')}
+                {data.label.replace(' Species Features', '')}
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Display selected species */}
+      {/* Selected species display */}
       {speciesSelected && (
         <p style={{ color: '#fff', marginTop: '4px' }}>
           Selected species: {getSpeciesLabel(speciesSelected)}
         </p>
       )}
 
-      {/* Other skill tree content */}
+      {/* Example: species modifiers (safe access) */}
+      {speciesSelected &&
+        ALL_SPECIES[speciesSelected]?.modifiers && (
+          <pre style={{ color: '#fff', marginTop: '8px' }}>
+            {JSON.stringify(
+              ALL_SPECIES[speciesSelected].modifiers,
+              null,
+              2
+            )}
+          </pre>
+        )}
     </Container>
   );
 }
 
 export default SkillTree;
-
-
