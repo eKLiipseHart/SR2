@@ -9,6 +9,8 @@ import Titles from './components/Titles';
 import ActiveSkillModifiers from './components/ActiveSkillModifiers';
 import ActiveCommandsAndCertifications from './components/ActiveCommandsAndCertifications';
 import { SKILLS, ALL_SPECIES } from './CONSTANTS';
+import SkillTree from './components/SkillTree.jsx';
+
 
 function App() {
   const [playerSkills, setPlayerSkills] = useState(() => {
@@ -201,4 +203,5 @@ function App() {
 }
 
 export default App;
+
 
