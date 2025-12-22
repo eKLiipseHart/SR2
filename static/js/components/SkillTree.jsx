@@ -3,28 +3,39 @@ import { Container } from '../styled-components';
 import { ALL_SPECIES } from '../CONSTANTS';
 
 function SkillTree() {
-  // Parent state for selected species
+  // Selected species (stores the KEY, e.g. "species_bothan")
   const [speciesSelected, setSpeciesSelected] = useState('');
 
-  // Dropdown open/close state
+  // Dropdown open/close
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Reference for click outside detection
+  // Click-outside detection
   const wrapperRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Helper to get display name
+  const getSpeciesLabel = (key) =>
+    ALL_SPECIES[key]?.replace(' Species Features', '') || '';
+
   return (
-    <Container className="skillTree" style={{ overflow: 'visible', position: 'relative', padding: '8px' }}>
+    <Container
+      className="skillTree"
+      style={{
+        overflow: 'visible',
+        position: 'relative',
+        padding: '8px',
+      }}
+    >
       <h2>Select Species</h2>
 
       {/* Species Dropdown */}
@@ -50,11 +61,7 @@ function SkillTree() {
             userSelect: 'none',
           }}
         >
-          {speciesSelected
-            ? speciesSelected === 'twilek'
-              ? "Twi'Lek"
-              : speciesSelected.replace('_', ' ')
-            : 'Species:'}
+          {speciesSelected ? getSpeciesLabel(speciesSelected) : 'Species:'}
         </div>
 
         {/* Dropdown list */}
@@ -65,7 +72,7 @@ function SkillTree() {
               top: '100%',
               left: 0,
               right: 0,
-              maxHeight: '50vh', // scrollable height
+              maxHeight: '50vh',
               overflowY: 'auto',
               backgroundColor: '#008ca7',
               border: '1px solid #36b2bc',
@@ -73,38 +80,41 @@ function SkillTree() {
               zIndex: 1000,
             }}
           >
-            {ALL_SPECIES.map((item) => (
+            {Object.entries(ALL_SPECIES).map(([id, label]) => (
               <div
-                key={item}
+                key={id}
                 onClick={() => {
-                  setSpeciesSelected(item); // updates parent state
-                  setDropdownOpen(false);   // closes dropdown
+                  setSpeciesSelected(id);
+                  setDropdownOpen(false);
                 }}
                 style={{
                   padding: '6px 8px',
                   cursor: 'pointer',
                   color: '#fff',
                   fontWeight: 'bold',
-                  textTransform: 'capitalize',
                 }}
-                onMouseEnter={(e) => (e.target.style.backgroundColor = '#00434c')}
-                onMouseLeave={(e) => (e.target.style.backgroundColor = '#008ca7')}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = '#00434c')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = '#008ca7')
+                }
               >
-                {item === 'twilek' ? "Twi'Lek" : item.replace('_', ' ')}
+                {label.replace(' Species Features', '')}
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Example: Display the currently selected species */}
+      {/* Display selected species */}
       {speciesSelected && (
         <p style={{ color: '#fff', marginTop: '4px' }}>
-          Selected species: {speciesSelected === 'twilek' ? "Twi'Lek" : speciesSelected.replace('_', ' ')}
+          Selected species: {getSpeciesLabel(speciesSelected)}
         </p>
       )}
 
-      {/* Other skill tree content can go here */}
+      {/* Other skill tree content */}
     </Container>
   );
 }
