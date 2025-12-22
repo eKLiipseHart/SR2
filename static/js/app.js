@@ -92,13 +92,17 @@ function App() {
   };
 
   // --- Handle species selection ---
-  const handleSpeciesChange = (species) => {
-    const normalized = species.replace('species_', '');
-    const newSkills = playerSkills.filter(item => !ALL_SPECIES.includes(item));
-    setPlayerSkills([...newSkills, normalized]);
-    setSpeciesSelected(normalized);
-    setDropdownOpen(false);
-  };
+  const handleSpeciesChange = (speciesKey) => {
+  // Remove any previously selected species skill
+  const newSkills = playerSkills.filter(
+    skill => !Object.keys(ALL_SPECIES).includes(skill)
+  );
+
+  setPlayerSkills([...newSkills, speciesKey]);
+  setSpeciesSelected(speciesKey);
+  setDropdownOpen(false);
+};
+
 
   return (
     <MainContainer>
@@ -129,10 +133,9 @@ function App() {
           >
             <span>
               {speciesSelected
-                ? speciesSelected === 'twilek'
-                  ? "Twi'Lek"
-                  : speciesSelected.replace('_', ' ')
-                : 'Species:'}
+  ? ALL_SPECIES[speciesSelected]?.label.replace(' Species Features', '')
+  : 'Species:'}
+
             </span>
             <span style={{ display: 'inline-block', transition: 'transform 0.2s ease', transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
               ▼
@@ -156,31 +159,31 @@ function App() {
             }}
           >
             {dropdownOpen &&
-              ALL_SPECIES.map(item => (
-                <div
-                  key={item}
-                  onClick={() => handleSpeciesChange(item)}
-                  style={{
-                    padding: '6px 8px',
-                    cursor: 'pointer',
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    textTransform: 'capitalize',
-                  }}
-                  onMouseEnter={e => (e.target.style.backgroundColor = '#00434c')}
-                  onMouseLeave={e => (e.target.style.backgroundColor = '#008ca7')}
-                >
-                  {item === 'twilek' ? "Twi'Lek" : item.replace('_', ' ')}
-                </div>
-              ))}
-          </div>
+  Object.entries(ALL_SPECIES).map(([key, data]) => (
+    <div
+      key={key}
+      onClick={() => handleSpeciesChange(key)}
+      style={{
+        padding: '6px 8px',
+        cursor: 'pointer',
+        color: '#fff',
+        fontWeight: 'bold',
+      }}
+      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#00434c')}
+      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#008ca7')}
+    >
+      {data.label.replace(' Species Features', '')}
+    </div>
+  ))
+}
+ </div>
         </div>
 
         {/* Optional: display currently selected species */}
         {speciesSelected && (
           <p style={{ color: '#fff', marginBottom: '12px' }}>
-            Selected species: {speciesSelected === 'twilek' ? "Twi'Lek" : speciesSelected.replace('_', ' ')}
-          </p>
+            Selected species: {ALL_SPECIES[speciesSelected]?.label.replace(' Species Features', '')}
+</p>
         )}
 
         {/* Existing skill components */}
@@ -198,3 +201,4 @@ function App() {
 }
 
 export default App;
+
