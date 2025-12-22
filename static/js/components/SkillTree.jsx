@@ -1,3 +1,4 @@
+console.log('ALL_SPECIES:', ALL_SPECIES);
 import React, { useState, useRef, useEffect } from 'react';
 import { Container } from '../styled-components';
 import { ALL_SPECIES } from '../CONSTANTS';
@@ -120,3 +121,4 @@ function SkillTree() {
 }
 
 export default SkillTree;
+
